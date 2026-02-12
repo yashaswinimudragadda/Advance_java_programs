@@ -1,0 +1,25 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+
+public class listarraytest1 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub                                  empty arraylist A should be uppercase L also
+		
+		ArrayList<String> AT=new ArrayList<String>();
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+		//========================================================= added items
+		AT.add("Pen");
+		AT.add("Pencil");
+		AT.add("Book");
+		AT.add("Eraser");
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+
+	}
+
+}
