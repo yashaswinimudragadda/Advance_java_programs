@@ -1,0 +1,69 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+
+public class Test {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub                                  empty arraylist A should be uppercase L also
+		
+		ArrayList<String> AT=new ArrayList<String>();
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+		//========================================================= added items
+		AT.add("Pen");
+		AT.add("Pencil");
+		AT.add("Book");
+		AT.add("Eraser");
+		System.out.println(AT);
+		System.out.println(AT.size());
+		//=========================================================
+		
+		AT.add("apple");
+		AT.add("mango");
+		AT.add("Book");
+		AT.add(null);//================================================added null values duplicated values 
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+		//=========================================adding values using index
+		
+		AT.add(5,"hello world");
+		AT.add(9,"welcome");   // ===========================we can add the elements with in the array size ................!!!!!
+		AT.add(" ");
+		AT.add("grapes");
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+		//===================================removing elements using index
+		
+		AT.remove(6);
+		System.out.println(AT);
+		System.out.println(AT.size());
+		//======================================removing using elements
+		
+		AT.remove("welcome");
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+		//=========================clearing all elements
+		
+		AT.clear();
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+		//=================adding again and removeAll is used to remove all elements
+		
+
+		AT.add("apple");
+		AT.add("mango");
+		AT.add("Book");
+		AT.removeAll(AT);
+		System.out.println(AT);
+		System.out.println(AT.size());
+		
+
+	}
+
+}
