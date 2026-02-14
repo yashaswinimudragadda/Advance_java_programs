@@ -1,0 +1,24 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+
+public class Test {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub                                  
+		
+		ArrayList<String> listOfInts = new ArrayList<>();
+		listOfInts.add("9");
+		listOfInts.add("2");
+		listOfInts.add("3");
+		listOfInts.add("4");
+		listOfInts.add("5");
+		listOfInts.add("6");
+		
+		System.out.println("Before Reversing: "+listOfInts);
+		Collections.sort(listOfInts);
+		System.out.println("After Reversing:" +listOfInts);
+		
+			}
+
+}
