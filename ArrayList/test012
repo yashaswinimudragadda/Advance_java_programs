@@ -1,0 +1,35 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+class Book{
+	int id;
+	String name, author,publisher;
+	int quantity;
+	public Book(int id,String name, String author, String publisher, int quanity) {
+		this.id=id;
+		this.name=name;
+		this.author=author;
+		this.publisher=publisher;
+		this.quantity=quantity;
+		
+	}
+	
+}
+
+class Test {
+
+	public static void main(String[] args) {
+		List<Book> List=new ArrayList<Book>();  
+		Book b1=new Book(101,"let us c","yashawanth","BPB",8);
+		Book b2=new Book(102,"data communication and networking","eorouzon","mcgr",6);
+		Book b3=new Book(103,"operating system","galyin","wiley",9);
+		List.add(b1);
+		List.add(b2);
+		List.add(b3);
+		for(Book b:List) {
+			System.out.println(b.id+" "+b.name+" "+b.author+" "+b.publisher+" "+b.quantity);
+		}
+}
+
+}
