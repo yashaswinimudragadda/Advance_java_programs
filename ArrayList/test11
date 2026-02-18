@@ -1,0 +1,20 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+public class Test {
+
+	public static void main(String[] args) {
+		ArrayList<String> al=new ArrayList<String>();
+		al.add("pen");
+		al.add("pencil");
+		al.add("book");
+		Iterator<String>iterator=al.iterator();// printing using iterator in while loop
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+		
+}
+
+}
