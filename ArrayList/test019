@@ -1,0 +1,26 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+		SortedSet<String>hs=new TreeSet<String>();
+		hs.add("pen");
+		hs.add("pencil");
+		hs.add("book");
+		hs.add("easer");
+		System.out.println(hs);//alphabetic order
+		
+		System.out.println();
+		TreeSet<String>ht=new TreeSet<String>();
+		ht.add("pen");
+		ht.add("pencil");
+		ht.add("book");
+		ht.add("easer");
+		System.out.println(ht);//alphabetic order
+}
+
+}
