@@ -1,0 +1,23 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+		LinkedList<String>it=new LinkedList<String>();
+		it.add("pen");
+		it.add("pencil");
+		it.add("book");
+		System.out.println(it);
+		it.addFirst("apple");
+		it.addLast("cherry");
+		System.out.println(it);
+		it.removeFirst();
+		it.removeLast();
+		System.out.println(it);
+}
+
+}
