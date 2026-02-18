@@ -1,0 +1,20 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+		Stack<String>at=new Stack<String>();
+		at.push("cat");
+		at.push("dog");
+		at.push("monkey");
+		at.push("ball");
+		System.out.println(at);
+		at.pop();
+		System.out.println(at);
+}
+
+}
