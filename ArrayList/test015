@@ -1,0 +1,25 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+	Vector<String> it=new Vector<String>();
+	it.add("cat");//====================================vectors
+	it.add("mat");
+	it.add("apple");
+	it.add("basket");
+	for(int x=0;x<it.size();x++) {
+	System.out.println(it.get(x));
+	}
+	
+	System.out.println();
+	for(String x:it) {
+		System.out.println(it);
+		}
+	
+}
+
+}
