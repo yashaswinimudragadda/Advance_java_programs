@@ -1,0 +1,26 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+		NavigableSet<String> hs=new TreeSet<String>();
+		//elements are added using add() method.
+		
+		hs.add("pen");
+		hs.add("pencil");
+		hs.add("book");
+		hs.add("easer");
+		
+		// iterating though the navigable set
+		
+		for(String value:hs) {
+			System.out.println(hs);
+			break;
+		}
+}
+
+}
