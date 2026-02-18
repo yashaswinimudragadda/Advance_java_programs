@@ -1,0 +1,19 @@
+
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+		LinkedHashSet<String>hs=new LinkedHashSet<String>();
+		hs.add("pen");
+		hs.add("pencil");
+		hs.add("book");
+		hs.add("easer");
+		System.out.println(hs);//system generate out
+}
+
+}
