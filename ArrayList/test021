@@ -1,0 +1,35 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+		Queue<String>queue=new LinkedList<String>();
+		queue.add("java");
+		queue.add(".net");
+		queue.add("javascript");
+		queue.add("html");
+		queue.add("java");
+		queue.add(".net");
+		queue.add("javascript");
+		queue.add("html");
+		System.out.println(queue);
+		System.out.println(queue.size());
+		System.out.println("================================");
+		queue.remove();
+		System.out.println(queue);
+		System.out.println(queue.size());
+		String x=queue.peek();
+		System.out.println(x);
+		System.out.println(queue.size());// it is clear that first in first out  . queue are implemented by linked list
+		// insertion order and retrive order are same in queue
+		// not sorting takes place
+		// duplication is allowed
+		// peek method used to  print the where it inspects the top element without removing it,
+		
+}
+
+}
