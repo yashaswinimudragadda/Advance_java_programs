@@ -1,0 +1,36 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+	PriorityQueue<String>pq=new PriorityQueue<String>();
+	pq.add("java");
+	pq.add(".net");
+	pq.add("javascript");
+	pq.add("html");
+	System.out.println(pq);
+	System.out.println(pq.size());
+	System.out.println("==========");
+	pq.remove();
+	System.out.println(pq);
+	System.out.println(pq.size());
+	System.out.println("==========");
+	String x=pq.peek();
+	System.out.println(x);
+	System.out.println(pq.size());
+
+	
+	// points to observe 
+	// insertion order != to retrieve order
+	
+	//priority queue the order the decision is taken by the system itself like os that decision 
+	//mini-heap memory
+	//priority queue is implemented by the priority queue
+		
+}
+
+}
