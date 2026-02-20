@@ -28,7 +28,7 @@ class Test {
 		// insertion order and retrive order are same in queue
 		// not sorting takes place
 		// duplication is allowed
-		// peek method used to  print the where it inspects the top element without removing it,
+		// peek method used to  print the where it inspects the top element without removing it. and also won't support four special methos by linked list.
 		
 }
 
