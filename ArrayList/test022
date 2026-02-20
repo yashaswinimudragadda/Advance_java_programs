@@ -1,0 +1,27 @@
+package advancejava;
+import java.lang.*;
+import java.util.*;
+import java.util.*;
+
+class Test {
+
+	public static void main(String[] args) {
+
+	PriorityQueue<Integer>pq=new PriorityQueue<Integer>();
+	pq.add(10);
+	pq.add(5);
+	pq.add(11);
+	pq.add(3);
+	pq.add(22);
+	System.out.println(pq);
+	
+	// points to observe 
+	// insertion order != to retrieve orde
+	
+	//priority queue the order the decision is taken by the system itself like os that decision 
+	//mini-heap memory
+	//priority queue is implemented by the priority queue
+		
+}
+
+}
