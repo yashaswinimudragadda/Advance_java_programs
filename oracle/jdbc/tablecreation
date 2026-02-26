@@ -1,0 +1,23 @@
+
+// createing table 
+package oraclecon;
+
+import java.sql.*;
+public class Oracletable {
+	public static void main(String args[] ) {
+		
+		 String host = "jdbc:oracle:thin:@db.freesql.com:1521/23ai_34ui2";
+	        String username = "MUDRAGADDARAJANIY_SCHEMA_EOTQZ";
+	        String password = "6XNsHY4E15JKO19M9L9YC7MF2XU!JC";
+		try {
+			  Connection con = DriverManager.getConnection(host, username, password);
+			  Statement stmt =con.createStatement();
+			  stmt.execute("create table myemp(eno int,ename varchar(225),esal int,egrade char(3))");
+				System.out.println("table is sucessfully created");
+		}catch(SQLException se) {
+			se.printStackTrace();
+		}
+		
+	}
+
+}
