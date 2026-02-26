@@ -1,0 +1,20 @@
+
+// oracleconnection with drive jar file 
+
+package oraclecon;
+import java.sql.*;
+
+public class OracleConnection {
+    public static void main(String[] args) {
+        String host = "jdbc:oracle:thin:@db.freesql.com:1521/23ai_34ui2";
+        String username = "MUDRAGADDARAJANIY_SCHEMA_EOTQZ";
+        String password = "6XNsHY4E15JKO19M9L9YC7MF2XU!JC";
+        try {
+            Connection conn = DriverManager.getConnection(host, username, password);
+            System.out.println("Connected to Oracle database");
+        } catch (SQLException e) {
+            System.out.println("Failed to connect to Oracle database");
+            e.printStackTrace();
+        }
+    }
+}
