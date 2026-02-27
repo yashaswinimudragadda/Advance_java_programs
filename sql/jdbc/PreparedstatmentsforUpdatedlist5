@@ -1,4 +1,20 @@
-{
+package advancejavaprograms;
+import java.sql.*;
+import java.util.*;
+
+public class PstmListRec {
+
+	public static void main(String [] args) {
+		String url="jdbc:mysql://localhost:3306/demobase";
+		String user ="root";
+		String password="1234";
+		String selectSql = "select ename,esal,egrade from myemp where eno=?";
+		String updateSql = "update myemp set ename=?,esal=?,egrade=? where eno=?";
+		
+		try (Connection con=DriverManager.getConnection(url,user,password);
+				PreparedStatement selectStmt = con.prepareStatement(selectSql);
+				PreparedStatement updateStmt=con.prepareStatement(updateSql);
+				Scanner sc=new Scanner(System.in);){
             // Take input for employee number
             System.out.print("Enter Employee Number (eno) to update: ");
             int eno = sc.nextInt();
@@ -14,72 +30,38 @@
             }
 
             String currentName = rs.getString("ename");
-            Double currentSal = rs.getDouble("esal");
-            if (rs.wasNull()) currentSal = null; // handle NULL salary
+            double currentSal = rs.getDouble("esal");
             String currentGrade = rs.getString("egrade");
 
-            // --- Employee Name ---
-            System.out.print("Enter New Employee Name (blank = keep '" + currentName + "', 'null' = set NULL): ");
-            String enameInput = sc.nextLine();
-            if (enameInput.trim().isEmpty()) {
-                updateStmt.setString(1, currentName);
-            } else if (enameInput.equalsIgnoreCase("null")) {
-                updateStmt.setNull(1, Types.VARCHAR);
-            } else {
-                updateStmt.setString(1, enameInput);
+            // Ask user for new values (press Enter to keep old)
+            System.out.print("Enter New Employee Name (leave blank to keep '" + currentName + "'): ");
+            String ename = sc.nextLine();
+            if (ename.trim().isEmpty()) {
+                ename = currentName;
             }
 
-            // --- Employee Salary ---
-            System.out.print("Enter New Employee Salary (blank = keep " + currentSal + ", 'null' = set NULL): ");
+            System.out.print("Enter New Employee Salary (leave blank to keep " + currentSal + "): ");
             String salInput = sc.nextLine();
-            if (salInput.trim().isEmpty()) {
-                if (currentSal == null) {
-                    updateStmt.setNull(2, Types.DOUBLE);
-                } else {
-                    updateStmt.setDouble(2, currentSal);
-                }
-            } else if (salInput.equalsIgnoreCase("null")) {
-                updateStmt.setNull(2, Types.DOUBLE);
-            } else {
-                updateStmt.setDouble(2, Double.parseDouble(salInput));
+            double esal = salInput.trim().isEmpty() ? currentSal : Double.parseDouble(salInput);
+
+            System.out.print("Enter New Employee Grade (leave blank to keep '" + currentGrade + "'): ");
+            String egrade = sc.nextLine();
+            if (egrade.trim().isEmpty()) {
+                egrade = currentGrade;
             }
 
-            // --- Employee Grade ---
-            System.out.print("Enter New Employee Grade (blank = keep '" + currentGrade + "', 'null' = set NULL): ");
-            String gradeInput = sc.nextLine();
-            if (gradeInput.trim().isEmpty()) {
-                updateStmt.setString(3, currentGrade);
-            } else if (gradeInput.equalsIgnoreCase("null")) {
-                updateStmt.setNull(3, Types.VARCHAR);
-            } else {
-                updateStmt.setString(3, gradeInput);
-            }
-
-            // --- eno ---
+            // Set update values
+            updateStmt.setString(1, ename);
+            updateStmt.setDouble(2, esal);
+            updateStmt.setString(3, egrade);
             updateStmt.setInt(4, eno);
 
             int rowsUpdated = updateStmt.executeUpdate();
 
             if (rowsUpdated > 0) {
-                System.out.println("\n✅ Record updated successfully for eno: " + eno);
-
-                // Fetch and display updated record
-                selectStmt.setInt(1, eno);
-                ResultSet updatedRs = selectStmt.executeQuery();
-                if (updatedRs.next()) {
-                    System.out.println("---- Updated Record ----");
-                    System.out.println("Eno   : " + eno);
-                    System.out.println("Ename : " + updatedRs.getString("ename"));
-                    double newSal = updatedRs.getDouble("esal");
-                    if (updatedRs.wasNull()) {
-                        System.out.println("Esal  : NULL");
-                    } else {
-                        System.out.println("Esal  : " + newSal);
-                    }
-                    System.out.println("Egrade: " + updatedRs.getString("egrade"));
-                }
+                System.out.println("Record updated successfully for eno: " + eno);
             } else {
-                System.out.println("❌ Update failed for eno: " + eno);
+                System.out.println("Update failed for eno: " + eno);
             }
 
         } catch (SQLException e) {
