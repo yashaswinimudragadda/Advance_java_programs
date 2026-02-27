@@ -1,0 +1,81 @@
+
+//program for update the records
+
+package advancejavaprograms;
+ import java.sql.*;
+ import java.util.*;
+ 
+ 
+ 
+public class PstmUpdate {
+ public static void main(String []args) {
+	 String url="jdbc:mysql://localhost:3306/demobase";
+	 String user="root";
+	 String password="1234";
+	 
+	 String selectsql="select ename,esal,egrade from myemp where eno=?";
+	 String updatesql="update myemp set ename=?,esal=?,egarde=? where eno = ?";
+	 
+	 try(
+			 Connection con = DriverManager.getConnection(url,user,password);
+			 PreparedStatement selectStmt = con.prepareStatement(selectsql);
+			 PreparedStatement updateStmt = con.prepareStatement(updatesql);
+			 Scanner sc= new Scanner(System.in);
+			 ){
+		 // take input for employee number
+		 
+		 System.out.print("Enter Employee number (eno) to update: ");
+		 int eno = sc.nextInt();
+		 sc.nextLine();//consume newline
+		 
+		 // fetch current values
+		 selectStmt.setInt(1, eno);
+		 ResultSet rs = selectStmt.executeQuery();
+		 
+		 
+		 if(!rs.next()) {
+			 System.out.println("No record found for eno: "+eno);
+		     return ;	 
+		 }
+		 
+		 String currentName = rs.getString("ename");
+		 double currentSal = rs.getDouble("esal");
+		 String currentGrade = rs.getString("egrade");
+		 
+		 //ask user for new values 
+		 System.out.print("enter new employee name(leave blank to keep "+currentName+"')");
+		 String ename=sc.nextLine();
+		 if(ename.trim().isEmpty()) {
+			 ename=currentName;
+		 }
+		 System.out.println("enter new employee salary (leave blank to keep"+currentSal+"): ");
+		 String salInput = sc.nextLine();
+		 double esal = salInput.trim().isEmpty()?currentSal: Double.parseDouble(salInput);
+		 
+		 System.out.println("enter new employee grade(leave blank to keep"+currentGrade+"): ");
+		 String egrade= sc.nextLine();
+		 if(egrade.trim().isEmpty()) {
+			 egrade=currentGrade;
+		 }
+		 
+		 //set update values
+		 updateStmt.setString(1,ename);
+		 updateStmt.setDouble(2,esal);
+		 updateStmt.setString(3,egrade);
+		 updateStmt.setInt(4,eno);
+		 
+		 int rowsUpdated=updateStmt.executeUpdate();
+		 
+		 if(rowsUpdated>0) {
+			 System.out.println("Record update successfully for eno: "+eno);
+		 }
+		 else {
+			 System.out.println("update failed for eno: "+eno);
+		 }
+		
+	 }catch(SQLException e) {
+		 e.printStackTrace();
+	 }
+	 
+ }
+}
