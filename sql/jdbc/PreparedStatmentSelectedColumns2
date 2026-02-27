@@ -1,0 +1,55 @@
+
+// printing selected employee details using eno
+
+package advancejavaprograms;
+import java.util.*;
+import java.sql.*;
+
+
+public class PrestmSelect {
+	public static void main(String[] args) {
+		//jdbc url,username,password
+		String url="jdbc:mysql://localhost:3306/demobase";
+		String user="root";
+		String password="1234";
+		
+		//sql query with placeholder
+		
+		String sql="SELECT eno,ename,esal,egrade from myemp where eno=?";
+		
+		try (Connection con=DriverManager.getConnection(url,user,password);
+				PreparedStatement pstmt = con.prepareStatement(sql);
+				Scanner sc=new Scanner(System.in);)
+		{
+			//get input from keyboard
+			
+			System.out.print("Enter Emploee Number: ");
+			int eno = sc.nextInt();
+			
+			//set parameter
+			
+			pstmt.setInt(1, eno);
+			
+			//execute query
+			ResultSet rs=pstmt.executeQuery();
+			
+			//check and display result
+			
+			if(rs.next()) {
+				System.out.println("Employee Details: ");
+				System.out.println("Eno     :"+rs.getInt("eno"));
+				System.out.println("Ename    :"+rs.getString("ename"));
+				System.out.println("Esal     :"+rs.getDouble("esal"));
+				System.out.println("Egrade   :"+rs.getString("egrade"));
+				
+			}
+			else {
+				System.out.println("No record found for eno: "+eno);
+			}
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+}
