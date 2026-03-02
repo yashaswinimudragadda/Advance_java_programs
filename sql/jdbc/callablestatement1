@@ -1,0 +1,50 @@
+package advancejavaprograms;
+import java.lang.*;
+import java.sql.*;
+
+public class CallableStatement1 {
+
+	static final String db_url = "jdbc:mysql://localhost:3306/demobase";
+	static final String user="root";
+	static final String pass="1234";
+	static final String query ="{call getEmpName(?,?)}";
+	public static void main(String[] args) {
+		try(Connection con= DriverManager.getConnection(db_url,user,pass);
+				CallableStatement stmt = con.prepareCall(query);
+				){
+			stmt.setInt(1,101);
+			stmt.registerOutParameter(2,java.sql.Types.VARCHAR);
+			System.out.println("executing stored procedure...");
+			stmt.execute();
+			String empName=stmt.getString(2);
+			System.out.println("emp name="+empName);
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+// procedure used is 
+
+USE demobase;
+
+DELIMITER //
+
+CREATE PROCEDURE getEmpName(
+    IN input_eno INT, 
+    OUT output_ename CHAR(20)
+)
+BEGIN
+    SELECT ename INTO output_ename 
+    FROM myemp 
+    WHERE eno = input_eno;
+END //
+
+DELIMITER ;
+// created table 
+create database demobase;
+use demobase;
+create table myemp(eno int primary key,ename char(20));
+insert into myemp value(101,"raghu");
+insert into myemp value(102,"anil");
+insert into myemp value(103,"sarath");
