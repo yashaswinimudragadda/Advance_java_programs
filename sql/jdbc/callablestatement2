@@ -1,0 +1,47 @@
+package advancejavaprograms;
+import java.sql.*;
+
+public class Callablestatement2 {
+	
+	public static void main (String [] args) {
+	String url = "jdbc:mysql://localhost:3306/demobase";
+    String user = "root";
+    String password = "1234";
+    
+    Connection con = null;
+    CallableStatement cstmt= null;
+    try {
+    	Class.forName("com.mysql.cj.jdbc.Driver");
+    	 con=DriverManager.getConnection(url,user,password);
+    	 cstmt=con.prepareCall("{?=call total_salary()}");
+    	 cstmt.registerOutParameter(1,Types.DOUBLE);
+    	 
+    	 cstmt.execute();
+    	 double totalSalary = cstmt.getDouble(1);
+    	  System.out.println("Total salary of employees: "+totalSalary);
+ 
+	}catch(Exception e) {
+		e.printStackTrace();
+	}finally {
+		try { if( cstmt!=null) cstmt.close();} catch(Exception e) {}
+		try { if(con != null) con.close();}catch(Exception e) {}
+	}
+	
+}
+}
+
+DROP FUNCTION IF EXISTS total_salary;
+
+DELIMITER //
+
+CREATE FUNCTION total_salary() 
+RETURNS DOUBLE
+READS SQL DATA
+BEGIN
+    DECLARE total DOUBLE;
+    -- Make sure 'salary' column exists in 'myemp'
+    SELECT SUM(salary) INTO total FROM myemp;
+    RETURN IFNULL(total, 0.0);
+END //
+
+DELIMITER ;
