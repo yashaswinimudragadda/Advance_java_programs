@@ -1,0 +1,17 @@
+
+for inserting the values ========================================================================================================================================
+
+DELIMITER //
+
+CREATE PROCEDURE insertStudent(
+IN P_sid INT,
+IN P_sname VARCHAR(50),
+IN P_course VARCHAR(50),
+IN P_marks INT
+)
+BEGIN
+INSERT INTO std VALUES (P_sid,P_sname,P_course, P_marks );
+
+END//
+DELIMITER ;
+========================================================================================================================================
