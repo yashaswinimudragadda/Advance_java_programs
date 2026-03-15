@@ -1,0 +1,53 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@page import="java.util.*" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<%-- This is a JSP comment. It is completely hidden from the browser --%>
+<%!
+int a=5;
+int b=3;
+int c;
+%><br>
+<%
+out.println("value before swap a = "+a+"\tb = "+b);
+c=a;
+a=b;
+b=c;
+out.println("value after swap(model 1) a = "+a+"\tb = "+b);
+%><br>
+<%
+out.println("value before swap a = "+a+"\tb = "+b);
+
+a=a+b;
+b=a-b;
+a=a-b;
+out.println("value after swap(model 2) a = "+a+"\tb = "+b);
+
+%><br>
+<%
+out.println("value before swap a = "+a+"\tb = "+b);
+a=a*b;
+b=a/b;
+a=a/b;
+out.println("value after swap(model 3) a = "+a+"\tb = "+b);
+%><br>
+<%
+out.println("value before swap a = "+a+"\tb = "+b);
+a=a^b;
+b=a^b;
+a=a^b;
+out.println("value after swap(model 4) a = "+a+"\tb = "+b);
+%><br>
+<%
+out.println("value before swap a = "+a+"\tb = "+b);
+b=a+b-(a=b);
+out.println("value after swap(model 5) a = "+a+"\tb = "+b);
+%>
+</body>
+</html>
