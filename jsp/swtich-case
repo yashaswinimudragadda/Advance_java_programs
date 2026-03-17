@@ -1,0 +1,77 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Switch case</title>
+<style>
+.result{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+border:1px solid #ddd;
+border-radius:10px;
+
+padding: 20px;
+margin:20px auto;
+width:fit-content;
+background-color:#f9f9f9;
+box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+
+</head>
+<body>
+out.println("==========switch case==============");
+out.println("1.Apple");
+out.println("2.Mango");
+out.println("3.Orange");
+out.pritnln("------------------------------------");
+
+<form>
+enter the value your value here (1-3):
+<input type="number" name="val" required>
+<button type="submit">click here</button>
+</form>
+
+
+<%String Valn = request.getParameter("n");
+if(Valn != null)
+	{
+	try{
+		int n = Integer.parseInt(Valn);
+%>
+<div class = "result">
+<h3> your item is given below</h3>
+<p>
+<%switch (n) { 
+case 1: 
+    out.print("Apple is your item."); 
+    break; 
+case 2: 
+    out.print("Mango is your item."); 
+    break; 
+case 3: 
+    out.print("Orange is your item."); 
+    break; 
+default: 
+    out.print("Invalid choice! Please pick 1, 2, or 3.");
+}%>
+</p>
+</div>
+<%
+        } catch(Exception e) {
+            out.println("<p style='color:red;'>Error: Check your value.</p>");
+        }
+    }
+%>
+
+
+
+
+
+</body>
+</html>
