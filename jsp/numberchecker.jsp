@@ -17,6 +17,9 @@
         <option value="palan">Palindrome</option>
         <option value="cyclo">Cyclic number</option>
         <option value="prime">Prime number</option>
+        <option value="even">Even/Odd number</option>
+        <option value="table">Get table</option>
+        <option value="ntables">n tables</option>
       </select>
     </td>
    </tr> 
@@ -88,6 +91,46 @@
 			 out.println(i+" is not prime.<br>");
 		 }
 	 }
+  }
+  else if("cylco".equals(val)){
+	  int l=n%10;
+	  int f=0;
+	  int i=0;
+	  while(n>0){
+		  f=n%10;
+		  n=n/10;
+		  i++;
+	  }
+	  String checker3=(f==l)?"The given number is cylco number. ":"The given number not is cyclo number .";	
+	  out.println(checker3);
+ }
+
+  else if("even".equals(val)){
+	for(int i=1;i<=n;i++){
+		if(i%2==0){
+			out.println(i+" is even number.<br>");
+		}
+		else{
+			out.println(i+" is odd number. <br>");
+		}
+	}
+  }
+
+  else if("table".equals(val)){
+	for(int i=1;i<=10;i++){
+		int t=n;
+		out.println(t+"X"+i+"="+(t*i)+"<br>");
+	}
+  }
+
+  else if("ntables".equals(val)){
+	  int t=n;
+  for(int j=1;j<=t;j++){	  
+	for(int i=1;i<=10;i++){
+		out.println(j+"X"+i+"="+(j*i)+"<br>");
+	}
+	out.println("<hr>");
+  }
   }
  %> 
 </div>
