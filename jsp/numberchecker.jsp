@@ -16,6 +16,7 @@
         <option value="arm">Armstrong</option>
         <option value="palan">Palindrome</option>
         <option value="cyclo">Cyclic number</option>
+        <option value="prime">Prime number</option>
       </select>
     </td>
    </tr> 
@@ -72,6 +73,22 @@
 	  String checker3=(f==l)?"The given number is cylco number. ":"The given number not is cyclo number .";	
 	  out.println(checker3);
  }
+
+  else if("prime".equals(val)){
+	 for(int i=2;i<=n;i++){
+		 boolean isprime=true;
+		 for(int j=2;j<=Math.sqrt(i);j++){
+			 isprime=false;
+			 break;
+		 }
+		 if(isprime){
+			 out.println(i+" is prime.<br>");
+		 }
+		 else{
+			 out.println(i+" is not prime.<br>");
+		 }
+	 }
+  }
  %> 
 </div>
 <%
