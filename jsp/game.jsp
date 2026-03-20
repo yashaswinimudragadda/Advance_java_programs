@@ -1,11 +1,13 @@
  <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-< %@ page import="java.util.*" %>
+<%@ page import="java.util.*" %>
 
 <%
     // --- 1. INITIALIZATION ---
     String[] board = (String[]) session.getAttribute("board");
     String turn = (String) session.getAttribute("turn");
     String winner = (String) session.getAttribute("winner");
+    Integer scoreX = (Integer) session.getAttribute("scoreX");
+    Integer scoreO = (Integer) session.getAttribute("scoreO");
 
     // Initialize if first visit or reset requested
     if (board == null || request.getParameter("reset") != null) {
@@ -15,6 +17,12 @@
         session.setAttribute("board", board);
         session.setAttribute("turn", turn);
         session.setAttribute("winner", winner);
+    }
+    if (scoreX == null || scoreO == null || request.getParameter("fullReset") != null) {
+        scoreX = 0;
+        scoreO = 0;
+        session.setAttribute("scoreX", scoreX);
+        session.setAttribute("scoreO", scoreO);
     }
 
     // --- 2. GAME LOGIC ---
@@ -55,11 +63,22 @@
             }
 
             // Update State
-            if (tempWinner != null) {
-                winner = tempWinner;
-            } else {
-                turn = turn.equals("X") ? "O" : "X";
-            }
+           if (tempWinner != null) {
+    winner = tempWinner;
+    
+    if (winner.equals("X")) {
+        scoreX++;
+        session.setAttribute("scoreX", scoreX);
+    } else if (winner.equals("O")) {
+        scoreO++;
+        session.setAttribute("scoreO", scoreO);
+    }
+
+    // Check for Series Winner (Best of 3 means first to 2)
+    if (scoreX >= 2 || scoreO >= 2) {
+        session.setAttribute("seriesWinner", scoreX >= 2 ? "X" : "O");
+    }
+}
             
             // Save to Session
             session.setAttribute("board", board);
@@ -124,6 +143,20 @@
                 <% } %>
             <% } %>
         </div>
+        <div class="scoreboard" style="margin-bottom: 20px; font-weight: bold; font-size: 1.2rem;">
+    <span class="X">X Score: <%= scoreX %></span> | 
+    <span class="O">O Score: <%= scoreO %></span>
+</div>
+
+<% 
+    String seriesWinner = (String) session.getAttribute("seriesWinner");
+    if (seriesWinner != null) { 
+%>
+    <div style="background: gold; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+        <h2>🏆 Player <%= seriesWinner %> Wins the Series! 🏆</h2>
+        <a href="?fullReset=true" class="btn-reset">Start New Series</a>
+    </div>
+<% } %>
 
         <a href="?reset=true" class="btn-reset">New Game</a>
     </div>
