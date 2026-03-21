@@ -3,47 +3,51 @@
 <%! 
     // --- AI HELPER METHODS (Defined in Declaration Tag) ---
     
-    // Check winner for AI simulation
+    // Checks the board to see if there is a winner or a draw
     String checkWinner(String[] b) {
+        // All 8 possible winning combinations
         int[][] wins = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
         for (int[] p : wins) {
+            // If three positions in a row have the same symbol
             if (b[p[0]].equals(b[p[1]]) && b[p[1]].equals(b[p[2]])) return b[p[0]];
         }
+        // If any cell contains a number (1-9), the game is still going
         for (String s : b) { if (!s.equals("X") && !s.equals("O")) return null; }
         return "draw";
     }
 
-    // Minimax Recursive Function
+    // Minimax Algorithm: A recursive function that simulates every possible future move
+    // to find the move that leads to a win or prevents a loss.
     int minimax(String[] b, int depth, boolean isMax) {
         String res = checkWinner(b);
-        if ("O".equals(res)) return 10 - depth;
-        if ("X".equals(res)) return depth - 10;
-        if ("draw".equals(res)) return 0;
+        if ("O".equals(res)) return 10 - depth;  // AI wins: higher score is better
+        if ("X".equals(res)) return depth - 10;  // Human wins: lower score is worse for AI
+        if ("draw".equals(res)) return 0;         // Neutral score
 
-        if (isMax) {
+        if (isMax) { // AI's turn (Maximizing)
             int best = -1000;
             for (int i=0; i<9; i++) {
                 if (!b[i].equals("X") && !b[i].equals("O")) {
-                    String temp = b[i]; b[i] = "O";
+                    String temp = b[i]; b[i] = "O"; // Try move
                     best = Math.max(best, minimax(b, depth + 1, false));
-                    b[i] = temp;
+                    b[i] = temp; // Undo move (backtrack)
                 }
             }
             return best;
-        } else {
+        } else { // Human's turn (Minimizing)
             int best = 1000;
             for (int i=0; i<9; i++) {
                 if (!b[i].equals("X") && !b[i].equals("O")) {
-                    String temp = b[i]; b[i] = "X";
+                    String temp = b[i]; b[i] = "X"; // Try move
                     best = Math.min(best, minimax(b, depth + 1, true));
-                    b[i] = temp;
+                    b[i] = temp; // Undo move
                 }
             }
             return best;
         }
     }
 
-    // Find the best move for AI
+    // Loops through all empty spots and runs Minimax to find the best index
     int findBestMove(String[] b) {
         int bestVal = -1000;
         int move = -1;
@@ -60,41 +64,50 @@
 %>
 <%
     // --- 1. INITIALIZATION ---
+    // Fetch game state from session memory
     String[] board = (String[]) session.getAttribute("board");
     String turn = (String) session.getAttribute("turn");
     String winner = (String) session.getAttribute("winner");
     Integer scoreX = (Integer) session.getAttribute("scoreX");
     Integer scoreO = (Integer) session.getAttribute("scoreO");
     int[] winIndices = (int[]) session.getAttribute("winIndices");
+    // History stores previous board states for the Undo feature
     List<String[]> history = (List<String[]>) session.getAttribute("history");
 
+    // Handle initial load or Reset buttons
     if (board == null || request.getParameter("reset") != null || request.getParameter("fullReset") != null) {
         board = new String[]{"1","2","3","4","5","6","7","8","9"};
-        turn = "X"; winner = null; winIndices = null; history = new ArrayList<String[]>();
+        turn = "X"; winner = null; winIndices = null; 
+        history = new ArrayList<String[]>(); // Clear undo history
+        
         session.setAttribute("board", board); session.setAttribute("turn", turn);
         session.setAttribute("winner", winner); session.setAttribute("winIndices", null);
         session.setAttribute("history", history);
+        
         if (request.getParameter("fullReset") != null) {
-            scoreX = 0; scoreO = 0; session.setAttribute("scoreX", 0); session.setAttribute("scoreO", 0);
+            scoreX = 0; scoreO = 0; 
+            session.setAttribute("scoreX", 0); session.setAttribute("scoreO", 0);
             session.setAttribute("seriesWinner", null);
         }
     }
     if (scoreX == null) scoreX = 0; if (scoreO == null) scoreO = 0;
 
     // --- 2. UNDO LOGIC ---
+    // If user clicks Undo, restore the board from the last item in the history list
     if (request.getParameter("undo") != null && history != null && history.size() >= 1 && winner == null) {
-        board = history.remove(history.size() - 1); // For AI mode, undoing 1 state takes you back to before YOUR move
+        board = history.remove(history.size() - 1); 
         session.setAttribute("board", board);
         session.setAttribute("history", history);
     }
 
     // --- 3. GAME LOGIC (Human Move) ---
     String moveStr = request.getParameter("move");
-    if (moveStr != null && winner == null && turn.equals("X")) {
+    if (moveStr != null && winner == null && "X".equals(turn)) {
         int index = Integer.parseInt(moveStr) - 1;
         if (!board[index].equals("X") && !board[index].equals("O")) {
-            history.add(board.clone()); // Save state before human moves
-            board[index] = "X";
+            // SAVE STATE: Save the board before the human makes a move so they can undo it later
+            history.add(board.clone()); 
+            board[index] = "X"; // Execute human move
             
             // Check if Human Won
             String result = checkWinner(board);
@@ -102,24 +115,28 @@
                 winner = result;
             } else {
                 // --- 4. AI MOVE (Minimax) ---
+                // If human didn't win, the AI calculates its move immediately
                 int aiIdx = findBestMove(board);
                 if (aiIdx != -1) {
                     board[aiIdx] = "O";
-                    result = checkWinner(board);
+                    result = checkWinner(board); // Check if AI won or drew
                     if (result != null) winner = result;
                 }
             }
 
-            // Update Winning Highlight
+            // HIGHLIGHT LOGIC: If game is over, find the 3 winning indices to highlight in Gold
             if (winner != null && !winner.equals("draw")) {
                 int[][] wins = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
                 for(int[] p : wins) {
                     if(board[p[0]].equals(board[p[1]]) && board[p[1]].equals(board[p[2]])) winIndices = p;
                 }
+                // Update scores
                 if (winner.equals("X")) scoreX++; else if (winner.equals("O")) scoreO++;
+                // Check for Series Winner (Best of 3)
                 if (scoreX >= 2 || scoreO >= 2) session.setAttribute("seriesWinner", scoreX >= 2 ? "X" : "O");
             }
 
+            // Update all session variables with the new state
             session.setAttribute("board", board); session.setAttribute("winner", winner);
             session.setAttribute("scoreX", scoreX); session.setAttribute("scoreO", scoreO);
             session.setAttribute("winIndices", winIndices); session.setAttribute("history", history);
@@ -133,12 +150,14 @@
     <meta charset="utf-8">
     <title>Impossible Tic Tac Toe AI</title>
     <style>
+        /* UI Design: Modern look with soft shadows and colors */
         body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f0f2f5; padding-top: 30px; }
         .game-card { background: white; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 12px; margin: 20px 0; }
         .cell { width: 100px; height: 100px; background: #fff; border: 2px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; text-decoration: none; transition: 0.2s; }
         .cell.empty:hover { background: #f8f9fa; transform: scale(1.05); }
         .X { color: #ff4757; } .O { color: #2f3542; }
+        /* Golden pulse effect for the winning row */
         .winner-cell { background-color: #ffd700 !important; color: white !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .status { font-size: 1.3rem; margin-bottom: 10px; height: 40px; font-weight: 600; }
@@ -150,9 +169,11 @@
 <body>
     <div class="game-card">
         <h1>Unbeatable AI</h1>
+        
         <div class="scoreboard">
             <span>Player (X): <b><%= scoreX %></b></span> | <span>AI (O): <b><%= scoreO %></b></span>
         </div>
+
         <div class="status">
             <% if (session.getAttribute("seriesWinner") != null) { %>
                 <span style="color: gold;">🏆 Series Winner: <%= session.getAttribute("seriesWinner") %> 🏆</span>
@@ -162,19 +183,35 @@
                 <span style="color: #2ed573;"><%= winner.equals("draw") ? "Draw!" : "Winner: " + winner %></span>
             <% } %>
         </div>
+
         <div class="grid">
-            <% for (int i = 0; i < 9; i++) {
-                boolean isOcc = board[i].equals("X") || board[i].equals("O");
-                boolean isWin = false; if (winIndices != null) { for (int w : winIndices) if (w == i) isWin = true; }
+            <% 
+                // Loop to build the 3x3 grid
+                for (int i = 0; i < 9; i++) {
+                    boolean isOcc = board[i].equals("X") || board[i].equals("O");
+                    boolean isWin = false; 
+                    if (winIndices != null) { for (int w : winIndices) if (w == i) isWin = true; }
             %>
                 <div class="cell <%= isOcc ? board[i] : "" %> <%= isWin ? "winner-cell" : "" %>">
-                    <% if (isOcc || winner != null) { %><%= isOcc ? board[i] : "" %><% } else { %><a href="?move=<%= i + 1 %>" style="width:100%;height:100%;"></a><% } %>
+                    <%-- If occupied, show symbol; if empty and game active, show clickable link --%>
+                    <% if (isOcc || winner != null) { %>
+                        <%= isOcc ? board[i] : "" %>
+                    <% } else { %>
+                        <a href="?move=<%= i + 1 %>" style="width:100%;height:100%;"></a>
+                    <% } %>
                 </div>
             <% } %>
         </div>
+
         <a href="?reset=true" class="btn btn-green">Next Round</a>
-        <% if (winner == null && history != null && !history.isEmpty()) { %><a href="?undo=true" class="btn btn-orange">Undo</a><% } %>
-        <br><a href="?fullReset=true" class="btn btn-red" style="margin-top:15px;">Reset Series</a>
+        
+        <%-- Show Undo button only if game is in progress and history exists --%>
+        <% if (winner == null && history != null && !history.isEmpty()) { %>
+            <a href="?undo=true" class="btn btn-orange">Undo</a>
+        <% } %>
+        
+        <br>
+        <a href="?fullReset=true" class="btn btn-red" style="margin-top:15px;">Reset Series</a>
     </div>
 </body>
 </html>
