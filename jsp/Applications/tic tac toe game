@@ -1,0 +1,180 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*" %>
+<%! 
+    // --- AI HELPER METHODS (Defined in Declaration Tag) ---
+    
+    // Check winner for AI simulation
+    String checkWinner(String[] b) {
+        int[][] wins = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
+        for (int[] p : wins) {
+            if (b[p[0]].equals(b[p[1]]) && b[p[1]].equals(b[p[2]])) return b[p[0]];
+        }
+        for (String s : b) { if (!s.equals("X") && !s.equals("O")) return null; }
+        return "draw";
+    }
+
+    // Minimax Recursive Function
+    int minimax(String[] b, int depth, boolean isMax) {
+        String res = checkWinner(b);
+        if ("O".equals(res)) return 10 - depth;
+        if ("X".equals(res)) return depth - 10;
+        if ("draw".equals(res)) return 0;
+
+        if (isMax) {
+            int best = -1000;
+            for (int i=0; i<9; i++) {
+                if (!b[i].equals("X") && !b[i].equals("O")) {
+                    String temp = b[i]; b[i] = "O";
+                    best = Math.max(best, minimax(b, depth + 1, false));
+                    b[i] = temp;
+                }
+            }
+            return best;
+        } else {
+            int best = 1000;
+            for (int i=0; i<9; i++) {
+                if (!b[i].equals("X") && !b[i].equals("O")) {
+                    String temp = b[i]; b[i] = "X";
+                    best = Math.min(best, minimax(b, depth + 1, true));
+                    b[i] = temp;
+                }
+            }
+            return best;
+        }
+    }
+
+    // Find the best move for AI
+    int findBestMove(String[] b) {
+        int bestVal = -1000;
+        int move = -1;
+        for (int i=0; i<9; i++) {
+            if (!b[i].equals("X") && !b[i].equals("O")) {
+                String temp = b[i]; b[i] = "O";
+                int moveVal = minimax(b, 0, false);
+                b[i] = temp;
+                if (moveVal > bestVal) { move = i; bestVal = moveVal; }
+            }
+        }
+        return move;
+    }
+%>
+<%
+    // --- 1. INITIALIZATION ---
+    String[] board = (String[]) session.getAttribute("board");
+    String turn = (String) session.getAttribute("turn");
+    String winner = (String) session.getAttribute("winner");
+    Integer scoreX = (Integer) session.getAttribute("scoreX");
+    Integer scoreO = (Integer) session.getAttribute("scoreO");
+    int[] winIndices = (int[]) session.getAttribute("winIndices");
+    List<String[]> history = (List<String[]>) session.getAttribute("history");
+
+    if (board == null || request.getParameter("reset") != null || request.getParameter("fullReset") != null) {
+        board = new String[]{"1","2","3","4","5","6","7","8","9"};
+        turn = "X"; winner = null; winIndices = null; history = new ArrayList<String[]>();
+        session.setAttribute("board", board); session.setAttribute("turn", turn);
+        session.setAttribute("winner", winner); session.setAttribute("winIndices", null);
+        session.setAttribute("history", history);
+        if (request.getParameter("fullReset") != null) {
+            scoreX = 0; scoreO = 0; session.setAttribute("scoreX", 0); session.setAttribute("scoreO", 0);
+            session.setAttribute("seriesWinner", null);
+        }
+    }
+    if (scoreX == null) scoreX = 0; if (scoreO == null) scoreO = 0;
+
+    // --- 2. UNDO LOGIC ---
+    if (request.getParameter("undo") != null && history != null && history.size() >= 1 && winner == null) {
+        board = history.remove(history.size() - 1); // For AI mode, undoing 1 state takes you back to before YOUR move
+        session.setAttribute("board", board);
+        session.setAttribute("history", history);
+    }
+
+    // --- 3. GAME LOGIC (Human Move) ---
+    String moveStr = request.getParameter("move");
+    if (moveStr != null && winner == null && turn.equals("X")) {
+        int index = Integer.parseInt(moveStr) - 1;
+        if (!board[index].equals("X") && !board[index].equals("O")) {
+            history.add(board.clone()); // Save state before human moves
+            board[index] = "X";
+            
+            // Check if Human Won
+            String result = checkWinner(board);
+            if (result != null) {
+                winner = result;
+            } else {
+                // --- 4. AI MOVE (Minimax) ---
+                int aiIdx = findBestMove(board);
+                if (aiIdx != -1) {
+                    board[aiIdx] = "O";
+                    result = checkWinner(board);
+                    if (result != null) winner = result;
+                }
+            }
+
+            // Update Winning Highlight
+            if (winner != null && !winner.equals("draw")) {
+                int[][] wins = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
+                for(int[] p : wins) {
+                    if(board[p[0]].equals(board[p[1]]) && board[p[1]].equals(board[p[2]])) winIndices = p;
+                }
+                if (winner.equals("X")) scoreX++; else if (winner.equals("O")) scoreO++;
+                if (scoreX >= 2 || scoreO >= 2) session.setAttribute("seriesWinner", scoreX >= 2 ? "X" : "O");
+            }
+
+            session.setAttribute("board", board); session.setAttribute("winner", winner);
+            session.setAttribute("scoreX", scoreX); session.setAttribute("scoreO", scoreO);
+            session.setAttribute("winIndices", winIndices); session.setAttribute("history", history);
+        }
+    }
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Impossible Tic Tac Toe AI</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f0f2f5; padding-top: 30px; }
+        .game-card { background: white; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 12px; margin: 20px 0; }
+        .cell { width: 100px; height: 100px; background: #fff; border: 2px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; text-decoration: none; transition: 0.2s; }
+        .cell.empty:hover { background: #f8f9fa; transform: scale(1.05); }
+        .X { color: #ff4757; } .O { color: #2f3542; }
+        .winner-cell { background-color: #ffd700 !important; color: white !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .status { font-size: 1.3rem; margin-bottom: 10px; height: 40px; font-weight: 600; }
+        .btn { display: inline-block; margin: 5px; padding: 12px 20px; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .btn-green { background: #2ed573; } .btn-red { background: #ff4757; } .btn-orange { background: #ffa502; }
+        .scoreboard { margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="game-card">
+        <h1>Unbeatable AI</h1>
+        <div class="scoreboard">
+            <span>Player (X): <b><%= scoreX %></b></span> | <span>AI (O): <b><%= scoreO %></b></span>
+        </div>
+        <div class="status">
+            <% if (session.getAttribute("seriesWinner") != null) { %>
+                <span style="color: gold;">🏆 Series Winner: <%= session.getAttribute("seriesWinner") %> 🏆</span>
+            <% } else if (winner == null) { %>
+                Your Turn (X)
+            <% } else { %>
+                <span style="color: #2ed573;"><%= winner.equals("draw") ? "Draw!" : "Winner: " + winner %></span>
+            <% } %>
+        </div>
+        <div class="grid">
+            <% for (int i = 0; i < 9; i++) {
+                boolean isOcc = board[i].equals("X") || board[i].equals("O");
+                boolean isWin = false; if (winIndices != null) { for (int w : winIndices) if (w == i) isWin = true; }
+            %>
+                <div class="cell <%= isOcc ? board[i] : "" %> <%= isWin ? "winner-cell" : "" %>">
+                    <% if (isOcc || winner != null) { %><%= isOcc ? board[i] : "" %><% } else { %><a href="?move=<%= i + 1 %>" style="width:100%;height:100%;"></a><% } %>
+                </div>
+            <% } %>
+        </div>
+        <a href="?reset=true" class="btn btn-green">Next Round</a>
+        <% if (winner == null && history != null && !history.isEmpty()) { %><a href="?undo=true" class="btn btn-orange">Undo</a><% } %>
+        <br><a href="?fullReset=true" class="btn btn-red" style="margin-top:15px;">Reset Series</a>
+    </div>
+</body>
+</html>
